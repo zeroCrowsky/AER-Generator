@@ -11,15 +11,15 @@
 #                 'sample': 1000,
 #                 'path' : path}
 
-root_path = 'impulsion/'
+root_path = ''
 data_path = root_path + 'data/'
 inputs_data_path  = data_path + 'inputs/'
 
 inject = lambda : CC(1, 0.01).inject(0.01, lambda : [EI(J, 0.005)])
 
-name_shapes = ['shape_5x5_diag_id1.txt',
-               'shape_5x5_square_id2.txt',
-               'shape_5x5_vline_id1.txt']
+name_shapes = ['shape_5x5_diag5.txt',
+               'shape_5x5_square9.txt',
+               'shape_5x5_vline5.txt']
 
 repr_shapes = ['diag', 'square', 'vline']
 
@@ -27,7 +27,7 @@ name_pres = ['cons', 'rdm_abs', 'rdm_eq']
 
 
 
-input_params = {'path_dest' : inputs_data_path + 'xp3/injected/',
+input_params = {'path_dest' : inputs_data_path,
                 'path_shapes' : inputs_data_path + 'shapes/',
                 'name_shapes' : name_shapes,
                 'repr_shapes' : repr_shapes,

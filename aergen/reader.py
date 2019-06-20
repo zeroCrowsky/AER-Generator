@@ -1,8 +1,8 @@
 import sys, os; sys.path.insert(0, os.getcwd())
 
-from impulsion.input.entity.input import EntityInput
+from aergen.core.input import EntityInput
 
-from impulsion.input.entity.alias import *
+from aergen.core.alias import *
 
 import optparse as op
 

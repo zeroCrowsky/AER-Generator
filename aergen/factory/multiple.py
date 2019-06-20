@@ -1,4 +1,4 @@
-from impulsion.utils import rmforce
+from aergen.core.utils import rmforce
 
 import os
 

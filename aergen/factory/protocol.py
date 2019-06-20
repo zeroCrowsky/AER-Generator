@@ -25,9 +25,9 @@
 #         create_all_params=get_directions
 #     )
 
-from impulsion.input.entity.input   import EntityInput
-from impulsion.input.entity.texture import EntityTexture
-from impulsion.input.entity.alias   import EP, EI, E, W, N, S, J
+from aergen.core.input   import EntityInput
+from aergen.core.texture import EntityTexture
+from aergen.core.alias   import EP, EI, E, W, N, S, J
 
 def create_all_directions_sequence(shapes, positions, input_params, shape_id=0):
        tp = input_params['time_pres']

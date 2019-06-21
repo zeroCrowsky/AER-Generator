@@ -1,8 +1,8 @@
 from aergen.core.direction import EntityDirection
 
-from aergen.config import Configuration
+from aergen.core.config import Configuration
 
-import aergen.utils as iu
+import aergen.core.utils as iu
 
 import numpy  as np
 import copy   as cp
@@ -191,7 +191,7 @@ class EntityPath(list):
         return self
 
     @property
-    def times(self)
+    def times(self):
         ts = []
         t = 0
         for e in self:

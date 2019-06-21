@@ -25,7 +25,7 @@ Step 2 - activate virtual environment :
 
 Step 3 - install dependencies :
 
-    > pip install -r requirements.txt
+    > pip install -r requirement.txt
 
 
 # Notes

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from aergen.path  import EntityPath
-from aergen.alias import *
+from aergen.core.path  import EntityPath
+from aergen.core.alias import *
 
 
 class EntityPathTest(TestCase):
@@ -50,4 +50,4 @@ class EntityPathTest(TestCase):
         item_str = str(item)
         
 
-        import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()

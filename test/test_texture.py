@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from aergen.texture import EntityTexture
+from aergen.core.texture import EntityTexture
 
 
 texture_str_expected1 = \

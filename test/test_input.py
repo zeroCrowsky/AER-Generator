@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from aergen.alias import *
+from aergen.core.alias import *
 
-import aergen.input as ei
+import aergen.core.input as ei
 
 class EntityInputTest(TestCase):
     def test_get_labels_withtimes(self):

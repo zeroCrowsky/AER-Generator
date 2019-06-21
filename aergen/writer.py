@@ -30,6 +30,6 @@ if __name__ == '__main__':
 
     ef = input_factory(**params)
     i1 = ef.create()
-    # i1.save(options.output)
-    # if options.animation:
-    #     i1.run_animation()
+    i1.save(options.output)
+    if options.animation:
+        i1.run_animation()

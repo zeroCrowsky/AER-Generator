@@ -20,16 +20,15 @@ def parse_args():
 
 # TODO REFACTOR FACTORY
 if __name__ == '__main__':
-    from impulsion.input.entity.alias   import *
-    from impulsion.input.entity.input   import *
-    from impulsion.input.entity.texture import *
+    from aergen.core.alias   import *
+    from aergen.core.input   import *
+    from aergen.core.texture import *
 
     options, _ = parse_args()
-
     exec(open(options.factory).read())
     exec(open(options.params).read())
 
-    ef = input_factory(**input_params)
+    ef = input_factory(**params)
     i1 = ef.create()
     # i1.save(options.output)
     # if options.animation:

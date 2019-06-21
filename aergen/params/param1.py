@@ -13,7 +13,6 @@
 
 root_path = ''
 data_path = root_path + 'data/'
-inputs_data_path  = data_path + 'inputs/'
 
 inject = lambda : CC(1, 0.01).inject(0.01, lambda : [EI(J, 0.005)])
 
@@ -27,8 +26,8 @@ name_pres = ['cons', 'rdm_abs', 'rdm_eq']
 
 
 
-input_params = {'path_dest' : inputs_data_path,
-                'path_shapes' : inputs_data_path + 'shapes/',
+input_params = {'path_dest'   : root_path,
+                'path_shapes' : data_path + 'shapes/',
                 'name_shapes' : name_shapes,
                 'repr_shapes' : repr_shapes,
                 'name_pres' : name_pres,

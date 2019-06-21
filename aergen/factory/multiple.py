@@ -18,8 +18,8 @@ class EntityMultipleFactory(object):
         self.prefix = prefix
         self.inject = inject
 
-        rmforce(self.path_dest)
-        os.makedirs(self.path_dest)
+        # rmforce(self.path_dest)
+        # os.makedirs(self.path_dest)
 
         # if inject is None:
         #     self.inject = lambda : CC(1, 0.005).inject(0.005, lambda : [EI(J, 0.003)])

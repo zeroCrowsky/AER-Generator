@@ -27,7 +27,9 @@
 
 from aergen.core.input   import EntityInput
 from aergen.core.texture import EntityTexture
+from aergen.core.texture import Shape
 from aergen.core.alias   import EP, EI, E, W, N, S, J
+
 
 def create_all_directions_sequence(shapes, positions, input_params, shape_id=0):
        tp = input_params['time_pres']
@@ -54,15 +56,17 @@ def create_all_directions_textures(shapes, positions, shape_id):
 
 class ProtocolInputSequenceFactory(object):
     def __init__(self, factory_params, input_params, input_test_params, shapes, shape_id=0, input_test=None):
-
+        
         self.positions = factory_params['positions']
-
+        self.pres_strategy = factory_params['pres_strategy']
+        
         self.input_params      = input_params
-        self.input_test_params = input_test_params
+        self.input_test_params = dict(input_params)
+        self.input_test_params.update(input_test_params)
 
         self.npres = input_params['npres']
 
-        self.shapes   = shapes
+        self.shapes   = self.init_shapes(shapes)
         self.shape_id = shape_id
 
         self.time_pres_msec      = round(self.input_params['time_pres'] * 1000, 6)
@@ -86,6 +90,21 @@ class ProtocolInputSequenceFactory(object):
 
         self.reset_input()
 
+    def init_shapes(self, shapes):
+        if not isinstance(shapes, list):
+            shapes = [shapes]
+        
+        if not isinstance(shapes[0], str):
+            return shapes
+
+        res = [None] * len(shapes)
+        for i in range(len(shapes)):
+            res[i] = Shape.fromfile(shapes[i])
+
+        return res
+        
+
+
     def reset_input(self):
         self._data_input = EntityInput.empty(self.input_params['dim'])
         self._orig       = 0
@@ -97,6 +116,14 @@ class ProtocolInputSequenceFactory(object):
         res.path    = self._data_input.path
 
         return res
+
+    def create(self):
+        input_test = self.create_input_test_sequence(self.pres_strategy)
+        # Input
+        self.reset_input()
+        self.input_test = input_test
+        result = self.create_input_sequence(self.pres_strategy)
+        return result
 
     def create_input_test_sequence(self, initializer_strategy_input_sequence):
         self.merge_sequence_input = self.merge_sequence_input_test

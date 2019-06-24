@@ -11,7 +11,7 @@
    - `winput`: This rule allows to execute a program that generates an AER sequence in text file, via a configuration file (see corresponding section). In Makefile, there are parameters to set the default paths to simplify the command line, if you wish, you can modify these parameters. Here is a simple command to generate one sequence, `-a` is an option to activate if you want to display the sequence when it is generated.
 
    ```
-   make winput PARAMS=param2.py OUTPUT=test.txt ARGS=-
+   make winput PARAMS=param2.py OUTPUT=test.txt ARGS=-a
    ``` 
    - `run_test`: This rule runs all unit tests
 

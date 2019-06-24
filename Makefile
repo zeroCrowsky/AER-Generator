@@ -1,7 +1,7 @@
 ################ PATH ###################
 PATH_TEST    = test/
 PATH_SRC     = aergen/
-PATH_DATA    = "data/"
+PATH_DATA    = ./
 PATH_PARAMS  = $(PATH_SRC)params/
 PATH_CORE    = $(PATH_SRC)core/
 PATH_FACTORY = $(PATH_SRC)factory/
@@ -10,8 +10,11 @@ MAIN_TEST	= $(PATH_TEST)main.py
 WRITER_EXEC = $(PATH_SRC)writer.py
 READER_EXEC = $(PATH_SRC)reader.py
 CUTTER_EXEC = $(PATH_SRC)cutter.py
+########### DEFAULT PARAMS ##############
+FACTORY = protocol.py
 ################ ENV ###################
 PY = python3
+
 
 winput:
 	$(PY) $(WRITER_EXEC) -f $(PATH_FACTORY)$(FACTORY) -p $(PATH_PARAMS)$(PARAMS) -o $(PATH_DATA)$(OUTPUT) $(ARGS)

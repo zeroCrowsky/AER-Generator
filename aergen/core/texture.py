@@ -101,12 +101,14 @@ class Shape(object):
                     break
 
                 if i == ishape:
-                    row = list(map(lambda x: x == '1', line[:-1]))
+                    line = line[:-1] if line[-1] == '\n' else line  
+                    row = list(map(lambda x: x == '1', line))
                     shape.append(row)
 
                 if line.startswith('#'):
                     i += 1
                     continue
+            
         return shape
 
 

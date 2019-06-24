@@ -7,9 +7,9 @@ shapes = shape_path + 'shape_5x5_diag5.txt'
 factory_params = {'positions'     : [(0,-5), (0,5), (-5,0), (5,0)],
                   'pres_strategy' : ProtocolInputSequenceFactory.initializer_consecutive_input_sequence}
 
-input_params = {'time_pres' : 0.03,
+input_params = {'time_pres' : 0.3,
                 'npres'     : 2,
-                'dim'       : (2,1),
+                'dim'       : (5,5),
                 'vel'       : 480,
                 'sample'    : 1000,
                 'is_tor'    : False,

@@ -348,51 +348,9 @@ class EntityInput(object):
         self.path = get_labels_withtimes(self.path, start, end)
         return
 
-
-
-    def run_animation(self, fps=60, xlim=None, ylim=None):
-        plt.ion()
-        fig = plt.figure(figsize=(6,6))
-        plt.show()
-        ax = fig.add_subplot(111)
-
-
-        xlim = 0, self.width-1  if xlim is None else xlim
-        ylim = 0, self.height-1 if ylim is None else ylim
-
-        delta = 1/fps if fps != 0 else 0
-
-        ids = np.array(self.indices)
-
-        xs = ids  % self.width
-        ys = ids // self.width
-
-        # for i in range(len(self.times)):
-        #     t = self.times[i]
-        #     i = self.indices[i]
-        #     x = xs[i]
-        #     y = ys[i]
-        #
-        #     # print('t :', str(t), 'i :', str(i), 'pos :', str(x) + ',' + str(y))
-
-        xs_ti = []
-        ys_ti = []
-        ti = self.times[0]
-        for i in range(len(self.times)): # self.times doit être ordonnées
-            if ti != self.times[i]:
-                ax.clear()
-                ax.scatter(xs_ti, ys_ti,
-                           c="g", marker = 'o', cmap = cm.jet)
-
-                ax.set_xlim(xlim)
-                ax.set_ylim(ylim)
-                plt.draw()
-                plt.pause(delta)
-
-                xs_ti = []
-                ys_ti = []
-                ti = self.times[i]
-
-            xs_ti.append(xs[i])
-            ys_ti.append(ys[i])
+    def run_animation(self, **kwargs):
+        import aergen.core.viewer as vw
+        kwargs['sequence'] = self
+        viewer = vw.SequenceViewer(**kwargs)
+        viewer.run()
         return

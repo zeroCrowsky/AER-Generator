@@ -92,6 +92,9 @@ class SequenceViewer(object):
         self.t       = round(self.t2 - self.t0, 5)
         self.dt      = round(self.t2 - self.t1, 5)
         self.clk_run = round(self.clk_run + self.dt, 5)
+        
+        log.info('t :', self.t, 'dt :', self.dt, 'clk_run :', self.clk_run)
+        return
 
     def update_method_with_time(self):
         self.t1 = self.t2
@@ -175,7 +178,10 @@ class InputViewCompenent(object):
         self.t0_idx = 0
         self.t0     = self.sequence.times[self.t0_idx]
 
-        self.matrix       = np.zeros((self.sequence.width, self.sequence.height), dtype=np.uint8)
+        self.finished      = False
+        self.just_finished = False
+
+        self.clear()
         self.cellcolor_empty = WHITE
         self.cellcolor_full  = BLUE
 
@@ -198,29 +204,45 @@ class InputViewCompenent(object):
 
     def update(self):
         if self.is_finished():
-            log.info('Fin de la sequence')
+            self.update_finish()
             return 
 
         if self.t_acquisition == 0:
             self.update_without_time_aquisition()
         else:
-            self.update_with_time_aquisition()
+            self.update_with_time_acquisition()
 
-       
         return 
 
     def is_finished(self):
-        return self.t0_idx >= len(self.sequence.times) - 1
+        status = self.t0_idx >= len(self.sequence.times) - 1
+        result = status and self.finished
+        if status and not self.finished:
+            self.just_finished = True
+        self.finished = status
+        return result
 
-    def update_with_time_acquisition(self):
+    def update_finish(self):
+        log.info('Fin de la sequence')
+        if self.just_finished:
+            self.clear()
+            self.just_finished = False
+        return
+
+    def clear(self):
         self.matrix = np.zeros((self.sequence.width, self.sequence.height), dtype=np.uint8)
-
-        t1     = self.t0 + self.t_acquisition
-        t1_idx = self.t0_idx
-
+        return
+    
+    def update_with_time_acquisition(self):
+        self.clear()
+        log.info('update_with_time_acquisition')
+        import ipdb; ipdb.set_trace()
         for i in range(self.t0_idx, len(self.sequence.times)):
             ti = self.sequence.times[i]
             ii = self.sequence.indices[i]
+
+            t1_idx = i
+            t1     = self.t0 + self.t_acquisition
 
             if ti >= t1:
                 self.t0_idx = t1_idx
@@ -231,13 +253,10 @@ class InputViewCompenent(object):
             yi = ii // self.sequence.width
             self.matrix[yi][xi] = 1
 
-            t1_idx = i
-            t1 = self.t0 + self.t_acquisition
-                
         return 
     
     def update_without_time_aquisition(self):
-        self.matrix = np.zeros((self.sequence.width, self.sequence.height), dtype=np.uint8)
+        self.clear()
 
         for i in range(self.t0_idx, len(self.sequence.times)):
             ti = self.sequence.times[i]

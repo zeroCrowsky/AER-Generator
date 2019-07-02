@@ -32,4 +32,4 @@ if __name__ == '__main__':
     i1 = ef.create()
     i1.save(options.output)
     if options.animation:
-        i1.run_animation(dim=(600,600), time_acquisition=1)
+        i1.run_animation(dim=(600,600), time_acquisition=0)

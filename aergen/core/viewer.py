@@ -14,7 +14,7 @@ BLUE  = 244, 133, 66
 # TODO : Sequence viewer : Probleme avec l'update_with_time_acquisition(), update auto avec le temps
 
 class SequenceViewer(object):
-    def __init__(self, sequence, time_acquisition, dim=None, celldim=None, grid=False, padding=0, update_mode='step-by-step'):
+    def __init__(self, sequence, time_acquisition, dim=None, celldim=None, grid=False, padding=0, update_mode='step-by-step', fps=None, delay=0):
         self.sequence         = sequence 
         self.time_acquisition = time_acquisition
         self.grid             = grid
@@ -25,9 +25,11 @@ class SequenceViewer(object):
         self.celldim = round(self.celldim[0]), round(self.celldim[1])
         self.background = np.full((self.height, self.width, 3), 255, dtype=np.uint8)
         self.frame = self.background
-    
+
         self.viewcomponent = self.init_viewcomponent()
         
+        self.fps   = fps
+        self.delay = delay
         self.init_update_mode(update_mode)
 
         return
@@ -82,7 +84,15 @@ class SequenceViewer(object):
         self.dt = 0
         self.t_run = 0
         self.clk_run = 0
+
+        if self.fps is not None:
+            self.delay = round(1/fps, 5)
+        
         return 
+
+    def sleep(self, sec):
+        time.sleep(sec)
+        return
 
 
     def update_time(self):
@@ -103,8 +113,9 @@ class SequenceViewer(object):
     def update_method_step_by_step(self):
         self.updated = False
         self.update_cpt += 1
-
         return
+
+    
 
     @property
     def width(self):
@@ -119,9 +130,15 @@ class SequenceViewer(object):
              return
         self.viewcomponent.update()
 
-        self.update_method()
-
         return
+
+    def update_show(self):
+        self.update_time()
+        
+        self.update_method()
+        # self.update_method_with_time()
+        return
+
 
     def clear(self):
         self.frame = self.background
@@ -130,6 +147,9 @@ class SequenceViewer(object):
         self.clear()
         self.viewcomponent.draw()
         cv2.imshow('Viewer', self.frame)
+        
+        self.update_show()
+
         return 
         
     def dispatch_event(self):
@@ -236,7 +256,6 @@ class InputViewCompenent(object):
     def update_with_time_acquisition(self):
         self.clear()
         log.info('update_with_time_acquisition')
-        import ipdb; ipdb.set_trace()
         for i in range(self.t0_idx, len(self.sequence.times)):
             ti = self.sequence.times[i]
             ii = self.sequence.indices[i]

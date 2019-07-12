@@ -36,25 +36,59 @@ class PixelTimeRandomGenerator(object):
         return self.random_int_fct(self.tmin, self.tmax)
 
 
-class PerTickUpdaterTexture(object):
-    def __init__(self, texture):
-        self.texture = texture
+class Updater(object):
+    def __init__(self, round_precision=5):
+        self.round_precision = round_precision
+
+        return
+
+    def uround(self, a, b):
+        return round(a, b, self.round_precision)
+
+class PerTickUpdater(object):
+    def __init__(self, dt=1, clk_run=0, round_precision=5):
+        super().__init__(round_precision)
+        self.dt = dt
+        self.clk_run = clk_run 
 
     def update(self):
-        pass 
+        self.clk_run = self.uround(self.clk_run + self.dt)
+        return
 
-class TimeUpdaterTexture(object):
-    def __init__(self, texture):
-        self.texture = texture
+    def update_post(self):
+        return
 
-    def update(self):
-        pass 
+# class TimeUpdater(object):
+#     def __init__(self, round_precision=5):
+#         super().__init__(round_precision)
+#         self.t0 = time.time()
+#         self.t1 = self.t0
+#         self.t2 = self.t1
+#         self.t = 0
+#         self.dt = 0
+#         self.t_run = 0
+#         self.clk_run = 0
+#         return 
 
+#     def update(self):
+#         # Variable manage time (unit: second)
+#         self.t2 = self.uround(time.time())
+#         self.t2 = self.uround(self.t2 - self.t_run)
+#         self.t  = self.uround(self.t2 - self.t0)
+#         self.dt = self.uround(self.t2 - self.t1)
+#         self.clk_run = self.uround(self.clk_run + self.dt)
+#         return
+
+#     def update_post(self):
+#         self.t1 = self.t2
+#         return
         
+
+# time_updater=TimeUpdater()
 class FlowMotionTexture(Texture):
-    def __init__(self, x, y, dim_texture, npixel_per_update, gen_pos, gen_time, update_mode='tick'):
+    def __init__(self, x, y, dim_texture, npixel_target, gen_pos, gen_time):
         Texture.__init__(self, x, y)
-        self.set_npixel_per_update(npixel_per_update)
+        self.set_npixel_target(npixel_target)
         self.gen_pos = gen_pos
         self.gen_time = gen_time
         self.width_texture = dim_texture[0]
@@ -63,36 +97,39 @@ class FlowMotionTexture(Texture):
         self.shape = [[0] * self.width_texture for _ in range(self.height_texture)]
         self.shape_pixels = sc.SortedList([], key=lambda x: -x[2])
 
+        
         self.clk_npixel = 0
-        self.npixel = 0
+        self.npixel     = 0
+        self.dt         = 0
+        self.t0         = 0 
+        self.t1         = 0
 
         self.init_texture()
 
         return
 
-    def set_npixel_per_update(self, npixel_per_update):
-        self._npixel_per_update = npixel_per_update
-        if isinstance(npixel_per_update, int):
-            self.npixel_per_update = npixel_per_update
+    def set_npixel_target(self, npixel_target):
+        self.npixel_target_info = npixel_target
+        if isinstance(npixel_target, int):
+            self.npixel_target = npixel_target
             return
 
-        a, b, _ = npixel_per_update
-
-        self.npixel_per_update = np.random.randint(a, b)
+        a, b, t = npixel_target
+        self.npixel_target = np.random.randint(a, b)
         return
 
-    def update_npixel_per_update(self):
-        if isinstance(self._npixel_per_update, int):
+    def update_npixel_taregt(self):
+        if isinstance(self.npixel_target_info, int):
             return
 
-        a, b, clk_npixel = self._npixel_per_update
+        a, b, t_npixel = self.npixel_target_info
 
-        if self.clk_npixel > clk_npixel:
-            self.npixel_per_update = np.random.randint(a, b)
+        if self.clk_npixel > t_npixel:
+            self.npixel_target = np.random.randint(a, b)
             self.clk_npixel = 0
             return
 
-        self.clk_npixel += 1
+        self.clk_npixel = round(self.clk_npixel + self.dt, 5)
         return
 
     def init_texture(self):
@@ -112,15 +149,34 @@ class FlowMotionTexture(Texture):
             self.shape[y][x] = self.gen_time.compute()
             self.shape_pixels.add((x, y, self.shape[y][x]))
             cpt_pixel += 1
+        return
 
     def del_pixels(self, npixel):
         for _ in range(npixel):
             x, y, _ = self.shape_pixels.pop()
             self.shape[y][x] = 0
         return
+    
+    def del_pixels_lte_zero(self):
+        n = len(self.shape_pixels)
+        while n >= 0:
+            if not self.shape_pixels[-1] <= 0:
+                break
+
+            x, y, _ = self.shape_pixels.pop()
+            self.shape[y][x] = 0
+            n -= 1
+
+        return
 
     def update(self):
-        for 
+        self.
+
+        self.update_npixel()
+
+        return
+         
+        
 
     def move(self, dir, mvt, time, no_move=True):
         if no_move and mvt == 0:
@@ -149,7 +205,7 @@ class FlowMotionInput():
         self.__path = path
 
         self.indices = []
-        self.times = []
+        self.times   = []
         # self.pathra nge = []
 
         self.length = length
@@ -165,7 +221,7 @@ class FlowMotionInput():
     def put(self, texture, pos, time):
         def put_elm(elm, is_texture=False):
             if self.is_tor:
-                elm[0] = elm[0] % self.width  # x
+                elm[0] = elm[0] % self.width   # x
                 elm[1] = elm[1] % self.height  # y
 
             elif elm[0] >= self.width or elm[0] < 0 or \
@@ -200,10 +256,10 @@ class FlowMotionInput():
         ts = 0  # Microseconds
         delta = round(1/self.sample * 1000, 5)
 
-        for ei in self.path:
-            n = int(ei.time * self.sample)
+        for adirection in self.path:
+            n = int(adirection.time * self.sample)
 
-            if ei.direction == EntityDirection.JUMP:
+            if adirection.direction == EntityDirection.JUMP:
                 ts = round(ts + n, 5)
                 continue
 
@@ -213,7 +269,7 @@ class FlowMotionInput():
                     acc -= math.floor(acc)
                     mvt += 1
 
-                self.texture.move(ei.direction, mvt, ts)
+                self.texture.move(adirection.direction, mvt, ts)
 
                 ts = round(ts + delta, 5)
                 acc += epsilon  # MOUAIS

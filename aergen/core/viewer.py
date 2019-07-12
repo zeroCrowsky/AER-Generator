@@ -86,7 +86,7 @@ class SequenceViewer(object):
         self.clk_run = 0
 
         if self.fps is not None:
-            self.delay = round(1/fps, 5)
+            self.delay = round(1/self.fps, 5)
         
         return 
 

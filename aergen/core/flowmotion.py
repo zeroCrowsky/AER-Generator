@@ -87,14 +87,14 @@ class PerTickUpdater(object):
 # time_updater=TimeUpdater()
 class FlowMotionTexture(Texture):
     def __init__(self, x, y, dim_texture, npixel_target, gen_pos, gen_time):
-        Texture.__init__(self, x, y)
+        super().__init__(x, y)
         self.set_npixel_target(npixel_target)
         self.gen_pos = gen_pos
         self.gen_time = gen_time
-        self.width_texture = dim_texture[0]
-        self.height_texture = dim_texture[1]
+        self.width  = dim_texture[0]
+        self.height = dim_texture[1]
 
-        self.shape = [[0] * self.width_texture for _ in range(self.height_texture)]
+        self.shape = [[0] * self.width for _ in range(self.height)]
         self.shape_pixels = sc.SortedList([], key=lambda x: -x[2])
 
         
@@ -118,7 +118,7 @@ class FlowMotionTexture(Texture):
         self.npixel_target = np.random.randint(a, b)
         return
 
-    def update_npixel_taregt(self):
+    def update_npixel_target(self):
         if isinstance(self.npixel_target_info, int):
             return
 
@@ -133,7 +133,7 @@ class FlowMotionTexture(Texture):
         return
 
     def init_texture(self):
-        self.new_pixels(self.npixel_per_update)
+        self.new_pixels(self.npixel_target)
 
     def new_pixels(self, npixel):
         '''
@@ -169,11 +169,25 @@ class FlowMotionTexture(Texture):
 
         return
 
-    def update(self):
-        self.
+    def update_pixels(self, direction, mvt):
+        self.shape_pixels = sc.SortedList([], key=lambda x: -x[2])
+        for x in range(self.width):
+            for y in range(self.height):
+                t = self.shape_pixels[y][x]
+                if t <= 0:
+                    self.shape[y][x] = 0
+                    continue
+        return
 
-        self.update_npixel()
+    def update(self, direction, mvt):
+        self.del_pixels_lte_zero()
+        self.update_npixel_target()    
 
+        npixel = self.npixel_target - len(self.shape_pixels)
+        
+        self.new_pixels(npixel)
+
+        
         return
          
         
@@ -181,41 +195,18 @@ class FlowMotionTexture(Texture):
     def move(self, dir, mvt, time, no_move=True):
         if no_move and mvt == 0:
             return False
+        
+        # compute dt
 
         pos = self.position + dir.direction * mvt
         return self.env.put(self, pos, time)
 
 
-class FlowMotionInput():
+class FlowMotionInput(EntityInput):
     def __init__(self, texture, path, dim, sample, vel, length=None,
                  is_tor=False, outside=False, builded=True):
-        self.texture = texture
-        self.vel = vel
+        super().__init__(texture, path, dim, sample, vel, length, is_tor, outside, builded)
 
-        self.sample = sample
-        self.width = dim[0]
-        self.height = dim[1]
-
-        self.is_tor = is_tor
-        self.outside = outside
-
-        if not isinstance(path, EntityPath):
-            path = EntityPath(path=path, env=self)
-
-        self.__path = path
-
-        self.indices = []
-        self.times   = []
-        # self.pathra nge = []
-
-        self.length = length
-
-        self.shape_id = texture.shape_id
-
-        texture.env = self
-
-        if builded:
-            self.build()
         return
 
     def put(self, texture, pos, time):
@@ -242,7 +233,7 @@ class FlowMotionInput():
                 if texture.shape[yi][xi]:
                     pixel = pos + np.array([xi, yi])
                     status = status and put_elm(pixel)
-
+    
         return status
 
     def build(self):
